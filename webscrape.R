@@ -1,11 +1,19 @@
 library(rvest)
 library(xml2)
 
-xml_structure(webpage, file='output.txt')
+# Get structure of html and output to file
+webpage.1 <- 'https://forums.botanicalgarden.ubc.ca/threads/kerrisdale.36008/page-1'
+webpage.1 <- read_html(webpage.1)
+xml_structure(webpage.1, file='output.txt')
+
+# define root URL and df that will hold scraped forum postings
 url.root <- 'https://forums.botanicalgarden.ubc.ca/threads/kerrisdale.36008/page-'
 text.df <- data.frame(page_num=numeric(),
                       text=character(),
                       date=character())
+
+# For each webpage (there are seven) scrape posts, adding the post text, date posted
+# and page number
 for (i in 1:7) {
   url <- paste(url.root, i, sep='')
   print(url)
@@ -21,13 +29,17 @@ for (i in 1:7) {
                                               date=dates))
 }
 
+# convert dates from posts to clean dates for future use
 text.df$clean_date <- mdy(text.df$date)
 
+# number each post
 text.df <- text.df %>% mutate(post_ID = row_number()) %>%
   relocate(post_ID, .before=page_num)
 
+# filter posts that for certain trees
 akebono.mentions <- text.df %>% filter(str_detect(text.df$text, 'akebono') | str_detect(text.df$text, 'prunus') |
                                          str_detect(text.df$text, 'yoshino') | str_detect(text.df$text, 'cherry') |
                                          str_detect(text.df$text, 'accolade'))
 
+# find the day of year of blooms
 akebono.mentions$bloom_doy <- yday(akebono.mentions$clean_date)
