@@ -3,6 +3,7 @@ library(readr)
 library(lubridate)
 library(dplyr)
 
+setwd('~/peak-bloom-prediction')
 vanc <- read_csv('vancouver.csv', col_names=T)
 stationid = "CA001108395"
 weather.vanc.dat <- meteo_tidy_ghcnd(stationid = stationid, var = c('TMAX', 'TMIN', 'PRCP'), 
