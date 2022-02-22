@@ -1,4 +1,8 @@
 library(rvest)
+library(stringr)
+library(dplyr)
+library(lubridate)
+library(readr)
 library(xml2)
 
 # Get structure of html and output to file
@@ -42,4 +46,8 @@ akebono.mentions <- text.df %>% filter(str_detect(text.df$text, 'akebono') | str
                                          str_detect(text.df$text, 'accolade'))
 
 # find the day of year of blooms
-akebono.mentions$bloom_doy <- yday(akebono.mentions$clean_date)
+text.df$bloom_doy <- yday(text.df$clean_date)
+
+write_csv(text.df, 'vancouver.csv', col_names=T)
+
+
